@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 // ============================================================
 // TELEGRAM BOT V3 - ULTRA STATIC & I18N COMPLETE
 // Single file, all translations and commands loaded into RAM
