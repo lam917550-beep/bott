@@ -121,6 +121,25 @@ function t(lang, key, params = {}) {
 }
 
 // ======================= AI SERVICE (GEMINI) =======================
+class RateLimiter {
+  constructor() { this.store = new Map(); }
+  check(key, limit, windowMs) {
+    const now = Date.now();
+    const record = this.store.get(key);
+    if (!record || now > record.resetTime) {
+      this.store.set(key, { count: 1, resetTime: now + windowMs });
+      return true;
+    }
+    if (record.count >= limit) return false;
+    record.count++;
+    return true;
+  }
+  cleanup() {
+    const now = Date.now();
+    for (const [key, rec] of this.store.entries()) if (now > rec.resetTime) this.store.delete(key);
+  }
+}
+
 class GeminiProvider {
   constructor(apiKey) {
     this.genAI = apiKey ? new GoogleGenerativeAI(apiKey) : null;
@@ -128,6 +147,8 @@ class GeminiProvider {
     this.maxHistory = 10;
     this.rateLimiter = new RateLimiter();
   }
+  ...
+}
   async generateText(prompt, userId = null) {
     if (!this.genAI) throw new Error('GEMINI_API_KEY not configured');
     const key = `ai_${userId || 'anon'}`;
