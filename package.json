@@ -1,0 +1,13 @@
+{
+  "name": "telegram-bot-v3",
+  "version": "1.0.0",
+  "description": "Telegram Bot with 10 languages and static commands",
+  "main": "bot.js",
+  "scripts": {
+    "start": "node bot.js"
+  },
+  "dependencies": {
+    "node-telegram-bot-api": "^0.61.0",
+    "express": "^4.18.2"
+  }
+}
