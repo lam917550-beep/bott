@@ -2,9 +2,6 @@
 // LASTFINAL — FULL ULTRA MAX TELEGRAM BOT + MINI APP
 // File: bot.js
 // ============================================================
-// Đầy đủ tính năng: AI, Game, Pet, Quest, Achievement, Inventory,
-// Shop, Leaderboard, Tournament, Social, Event, Notification, Owner.
-// ============================================================
 
 const express = require('express');
 const TelegramBot = require('node-telegram-bot-api');
@@ -28,8 +25,8 @@ const ENV = {
   DB_PATH: process.env.DB_PATH || path.join(__dirname, 'superbot.db'),
   OWNER_ID: process.env.OWNER_TELEGRAM_ID || '',
   WEBAPP_URL: process.env.WEBAPP_URL || '',
-  STARTING_BALANCE: parseInt(process.env.STARTING_BALANCE) || 10000,
-  PLAYER_WIN_RATE: parseFloat(process.env.PLAYER_WIN_RATE) || 0.45,
+  STARTING_BALANCE: parseInt(process.env.STARTING_BALANCE) || 5000,
+  PLAYER_WIN_RATE: parseFloat(process.env.PLAYER_WIN_RATE) || 0.43,
 };
 
 if (!ENV.TELEGRAM_TOKEN) { console.error('[FATAL] TELEGRAM_BOT_TOKEN missing'); process.exit(1); }
@@ -53,7 +50,7 @@ function addFooter(text, lang) { return text + '\n\n' + t(lang, 'footer'); }
 // ======================= I18N (10 LANGUAGES) =======================
 const translations = {
   vi: {
-    welcome: '👋 Chào mừng {name}!\n\n🤖 AI:\n/ai <câu hỏi> - Chat với AI\n/img <mô tả> - Tạo ảnh\n\n🎮 Game:\n/games - Danh sách game\n/game - Mở Mini App\n\n🐾 Pet:\n/pet - Xem thú cưng\n\n🏆 BXH:\n/leaderboard - Xem bảng xếp hạng\n\n👤 Profile:\n/profile - Thông tin tài khoản\n\n🌐 Ngôn ngữ:\n/language - Đổi ngôn ngữ\n\n📚 Trợ giúp:\n/help - Xem tất cả lệnh',
+    welcome: '👋 Chào mừng {name}!',
     help_title: '📚 Danh sách lệnh (Trang {page}/{total})',
     cooldown: '⏳ Bạn đang sử dụng lệnh quá nhanh.',
     error: '❌ Đã xảy ra lỗi.',
@@ -69,13 +66,7 @@ const translations = {
     redeem_success: '🎉 Bạn nhận được {amount} xu!',
     redeem_invalid: 'Mã không hợp lệ hoặc đã dùng.',
     owner_only: '⛔ Bạn không có quyền.',
-    ownerhelp: '🔐 Lệnh Admin:\n' +
-      '/gencode <số xu> <số lượng> - Tạo mã code\n' +
-      '/delcode <mã> - Xóa mã\n' +
-      '/listcodes - Danh sách mã\n' +
-      '/ownerstats - Thống kê\n' +
-      '/broadcast <nội dung> - Gửi thông báo\n' +
-      '/maintenance on|off - Bảo trì',
+    ownerhelp: '🔐 Lệnh Admin:\n/gencode <số xu> <số lượng> - Tạo mã code\n/delcode <mã> - Xóa mã\n/listcodes - Danh sách mã\n/ownerstats - Thống kê\n/broadcast <nội dung> - Gửi thông báo\n/maintenance on|off - Bảo trì',
     page: 'Trang', next: '▶️', prev: '◀️', home: '🏠', search: '🔍', category: '📂',
     pet_stats: '🐾 {name} ({type}) - {rarity}\nLevel: {level} | XP: {xp}\nHappiness: {happiness} | Energy: {energy}\nHunger: {hunger} | Cleanliness: {cleanliness}',
     quest_title: '🎯 Nhiệm vụ', achievement_title: '🏅 Thành tựu', profile_title: '👤 Hồ sơ',
@@ -85,19 +76,13 @@ const translations = {
     game_open: '🎮 Mở Mini App', open_mini_app: '🚀 Mở Mini App',
   },
   en: {
-    welcome: '👋 Welcome {name}!\n\n🤖 AI:\n/ai <question> - Chat with AI\n/img <description> - Generate image\n\n🎮 Game:\n/games - List games\n/game - Open Mini App\n\n🐾 Pet:\n/pet - View pet\n\n🏆 Leaderboard:\n/leaderboard - View rankings\n\n👤 Profile:\n/profile - Account info\n\n🌐 Language:\n/language - Change language\n\n📚 Help:\n/help - All commands',
+    welcome: '👋 Welcome {name}!',
     help_title: '📚 Commands (Page {page}/{total})',
     cooldown: '⏳ Too fast.', error: '❌ Error occurred.', ai_ask: 'Enter question.', ai_error: 'AI unavailable.',
     img_ask: 'Enter image description.', img_error: 'Cannot generate image.', language_set: '✅ Language changed to {lang}.',
     language_menu: '🌐 Select language:', footer: 'Bot owner @itznvl • Please share the bot ❤️', menu: '📋 Main menu:',
     redeem_usage: 'Usage: /redeem <code>', redeem_success: '🎉 You got {amount} coins!', redeem_invalid: 'Invalid or used code.',
-    owner_only: '⛔ Permission denied.', ownerhelp: '🔐 Admin Commands:\n' +
-      '/gencode <coins> <count> - Create codes\n' +
-      '/delcode <code> - Delete code\n' +
-      '/listcodes - List codes\n' +
-      '/ownerstats - Stats\n' +
-      '/broadcast <text> - Broadcast\n' +
-      '/maintenance on|off - Maintenance',
+    owner_only: '⛔ Permission denied.', ownerhelp: '🔐 Admin Commands:\n/gencode <coins> <count> - Create codes\n/delcode <code> - Delete code\n/listcodes - List codes\n/ownerstats - Stats\n/broadcast <text> - Broadcast\n/maintenance on|off - Maintenance',
     page: 'Page', next: '▶️', prev: '◀️', home: '🏠', search: '🔍', category: '📂',
     pet_stats: '🐾 {name} ({type}) - {rarity}\nLevel: {level} | XP: {xp}\nHappiness: {happiness} | Energy: {energy}\nHunger: {hunger} | Cleanliness: {cleanliness}',
     quest_title: '🎯 Quest', achievement_title: '🏅 Achievement', profile_title: '👤 Profile',
@@ -120,7 +105,7 @@ function t(lang, key, params = {}) {
   return text;
 }
 
-// ======================= AI SERVICE (GEMINI) =======================
+// ======================= RATE LIMITER =======================
 class RateLimiter {
   constructor() { this.store = new Map(); }
   check(key, limit, windowMs) {
@@ -140,6 +125,7 @@ class RateLimiter {
   }
 }
 
+// ======================= AI SERVICE (GEMINI) =======================
 class GeminiProvider {
   constructor(apiKey) {
     this.genAI = apiKey ? new GoogleGenerativeAI(apiKey) : null;
@@ -147,8 +133,6 @@ class GeminiProvider {
     this.maxHistory = 10;
     this.rateLimiter = new RateLimiter();
   }
-  ...
-}
   async generateText(prompt, userId = null) {
     if (!this.genAI) throw new Error('GEMINI_API_KEY not configured');
     const key = `ai_${userId || 'anon'}`;
@@ -185,26 +169,6 @@ class GeminiProvider {
   clearConversation(userId) { this.conversations.delete(userId); }
 }
 const aiProvider = new GeminiProvider(ENV.GEMINI_API_KEY);
-
-// ======================= RATE LIMITER =======================
-class RateLimiter {
-  constructor() { this.store = new Map(); }
-  check(key, limit, windowMs) {
-    const now = Date.now();
-    const record = this.store.get(key);
-    if (!record || now > record.resetTime) {
-      this.store.set(key, { count: 1, resetTime: now + windowMs });
-      return true;
-    }
-    if (record.count >= limit) return false;
-    record.count++;
-    return true;
-  }
-  cleanup() {
-    const now = Date.now();
-    for (const [key, rec] of this.store.entries()) if (now > rec.resetTime) this.store.delete(key);
-  }
-}
 
 // ======================= DATABASE =======================
 let db;
@@ -348,7 +312,7 @@ class AuthService {
 }
 const authService = new AuthService();
 
-// ======================= GAME ENGINE (500+ games) =======================
+// ======================= GAME ENGINE =======================
 class GameEngine {
   constructor() { this.games = []; this.generateGames(); }
   generateGames() {
@@ -440,39 +404,6 @@ class PetSystem {
 }
 const petSystem = new PetSystem();
 
-// ======================= QUEST SYSTEM =======================
-class QuestSystem {
-  async addQuest(userId, type) {
-    await db.run('INSERT INTO quests (user_id, quest_type) VALUES (?, ?)', [userId, type]);
-  }
-  async getQuests(userId) { return await db.all('SELECT * FROM quests WHERE user_id = ?', [userId]); }
-  async completeQuest(userId, questId) {
-    const quest = await db.get('SELECT * FROM quests WHERE id = ? AND user_id = ?', [questId, userId]);
-    if (!quest || quest.completed) return null;
-    await db.run('UPDATE quests SET completed=1 WHERE id=?', [questId]);
-    return quest;
-  }
-}
-const questSystem = new QuestSystem();
-
-// ======================= ACHIEVEMENT SYSTEM =======================
-class AchievementSystem {
-  async addProgress(userId, key, progress) {
-    const existing = await db.get('SELECT * FROM achievements WHERE user_id = ? AND achievement_key = ?', [userId, key]);
-    if (existing) {
-      const newProgress = existing.progress + progress;
-      if (newProgress >= 100 && !existing.unlocked) {
-        await db.run('UPDATE achievements SET progress=100, unlocked=1 WHERE id=?', [existing.id]);
-      } else {
-        await db.run('UPDATE achievements SET progress=? WHERE id=?', [newProgress, existing.id]);
-      }
-    } else {
-      await db.run('INSERT INTO achievements (user_id, achievement_key, progress) VALUES (?, ?, ?)', [userId, key, progress]);
-    }
-  }
-}
-const achievementSystem = new AchievementSystem();
-
 // ======================= COMMAND REGISTRY =======================
 class CommandRegistry {
   constructor() { this.commands = new Map(); this.aliases = new Map(); }
@@ -502,7 +433,6 @@ const helpPageState = new Map();
 
 // ======================= REGISTER COMMANDS =======================
 function registerCommands() {
-  // /start
   commandRegistry.register({
     name: '/start', description: 'Khởi động bot', category: 'core',
     handler: async (msg) => {
@@ -519,7 +449,6 @@ function registerCommands() {
     }
   });
 
-  // /help
   commandRegistry.register({
     name: '/help', description: 'Danh sách lệnh', category: 'core',
     handler: async (msg) => {
@@ -545,7 +474,6 @@ function registerCommands() {
     }
   });
 
-  // /language
   commandRegistry.register({
     name: '/language', description: 'Đổi ngôn ngữ', category: 'core',
     handler: async (msg) => {
@@ -555,7 +483,6 @@ function registerCommands() {
     }
   });
 
-  // /game
   commandRegistry.register({
     name: '/game', description: 'Mở Mini App', category: 'game',
     handler: async (msg) => {
@@ -567,7 +494,6 @@ function registerCommands() {
     }
   });
 
-  // /ai, /chat, /ask...
   const aiCommands = ['ai', 'ask', 'chat', 'explain', 'summarize', 'rewrite', 'translate', 'code', 'idea', 'story', 'caption'];
   aiCommands.forEach(cmd => {
     commandRegistry.register({
@@ -587,7 +513,6 @@ function registerCommands() {
     });
   });
 
-  // /img
   commandRegistry.register({
     name: '/img', description: 'Tạo ảnh', category: 'ai', aliases: ['/imagine'],
     handler: async (msg) => {
@@ -604,7 +529,6 @@ function registerCommands() {
     }
   });
 
-  // /pet
   commandRegistry.register({
     name: '/pet', description: 'Xem thú cưng', category: 'pet',
     handler: async (msg) => {
@@ -615,7 +539,6 @@ function registerCommands() {
     }
   });
 
-  // /redeem
   commandRegistry.register({
     name: '/redeem', description: 'Nhập code lấy xu', category: 'economy',
     handler: async (msg) => {
@@ -630,7 +553,6 @@ function registerCommands() {
     }
   });
 
-  // /games
   commandRegistry.register({
     name: '/games', description: 'Danh sách game', category: 'game',
     handler: async (msg) => {
@@ -641,7 +563,6 @@ function registerCommands() {
     }
   });
 
-  // Owner commands (hidden)
   commandRegistry.register({
     name: '/ownerhelp', description: 'Lệnh Admin', category: 'owner', ownerOnly: true,
     handler: async (msg) => {
@@ -684,201 +605,3 @@ function registerCommands() {
       if (codes.length === 0) return bot.sendMessage(msg.chat.id, 'Chưa có code');
       let text = 'Danh sách code:\n';
       codes.forEach(c => text += `${c.code} - ${c.amount} xu (${c.used}/${c.max_uses})\n`);
-      bot.sendMessage(msg.chat.id, text);
-    }
-  });
-  commandRegistry.register({
-    name: '/ownerstats', description: 'Thống kê', category: 'owner', ownerOnly: true,
-    handler: async (msg) => {
-      if (!isOwner(msg.from.id)) return bot.sendMessage(msg.chat.id, t(getUserLanguage(msg.from.id), 'owner_only'));
-      const users = await db.get('SELECT COUNT(*) as count FROM users');
-      const pets = await db.get('SELECT COUNT(*) as count FROM pets');
-      const codes = await db.get('SELECT COUNT(*) as count FROM redeem_codes');
-      const text = `👥 Users: ${users.count}\n🐾 Pets: ${pets.count}\n🎟️ Codes: ${codes.count}`;
-      bot.sendMessage(msg.chat.id, text);
-    }
-  });
-
-  // 1500 static commands
-  for (let i = 1; i <= 1500; i++) {
-    commandRegistry.register({
-      name: `/cmd${i}`, description: `Static command ${i}`, category: 'static',
-      handler: (msg) => bot.sendMessage(msg.chat.id, `Static command ${i}`)
-    });
-  }
-}
-
-// ======================= BOT SETUP =======================
-const bot = new TelegramBot(ENV.TELEGRAM_TOKEN, { polling: true });
-
-// ======================= CALLBACK HANDLER =======================
-bot.on('callback_query', async (query) => {
-  const data = query.data;
-  const chatId = query.message.chat.id;
-  const userId = query.from.id;
-  const lang = getUserLanguage(userId);
-
-  if (data.startsWith('lang:')) {
-    const newLang = data.split(':')[1];
-    if (LANGUAGES.includes(newLang)) {
-      setUserLanguage(userId, newLang);
-      bot.answerCallbackQuery(query.id, { text: t(newLang, 'language_set', { lang: newLang }) });
-      bot.sendMessage(chatId, t(newLang, 'language_set', { lang: newLang }));
-    }
-    return;
-  }
-
-  if (data === 'help_prev' || data === 'help_next' || data === 'help_home') {
-    const all = commandRegistry.getAll();
-    const pageSize = 10;
-    const totalPages = Math.ceil(all.length / pageSize);
-    let page = helpPageState.get(userId) || 1;
-    if (data === 'help_prev') page = Math.max(1, page - 1);
-    if (data === 'help_next') page = Math.min(totalPages, page + 1);
-    if (data === 'help_home') page = 1;
-    helpPageState.set(userId, page);
-    const start = (page - 1) * pageSize;
-    const pageCommands = all.slice(start, start + pageSize);
-    let text = t(lang, 'help_title', { page, total: totalPages }) + '\n\n';
-    pageCommands.forEach(cmd => text += `/${cmd.name} - ${cmd.description}\n`);
-    text += `\n${t(lang, 'prev')}  ${t(lang, 'page')} ${page}/${totalPages}  ${t(lang, 'next')}`;
-    text = addFooter(text, lang);
-    const keyboard = [
-      [{ text: t(lang, 'prev'), callback_data: 'help_prev' }, { text: t(lang, 'next'), callback_data: 'help_next' }],
-      [{ text: t(lang, 'home'), callback_data: 'help_home' }, { text: t(lang, 'search'), callback_data: 'help_search' }]
-    ];
-    bot.answerCallbackQuery(query.id);
-    bot.editMessageText(text, { chat_id: chatId, message_id: query.message.message_id, reply_markup: { inline_keyboard: keyboard } });
-    return;
-  }
-
-  if (data === 'help_search') {
-    bot.answerCallbackQuery(query.id, { text: 'Chức năng search đang được phát triển' });
-    return;
-  }
-
-  let responseText = '';
-  switch(data) {
-    case 'menu_ai': responseText = '🤖 AI commands: /ai, /img'; break;
-    case 'menu_game': responseText = '🎮 Games: /games'; break;
-    case 'menu_pet': responseText = '🐾 Pet: /pet'; break;
-    case 'menu_leaderboard': responseText = '🏆 Leaderboard coming soon'; break;
-    case 'menu_profile': responseText = '👤 Profile: /profile'; break;
-    case 'menu_language': responseText = '🌐 Use /language'; break;
-  }
-  if (responseText) {
-    bot.answerCallbackQuery(query.id);
-    bot.sendMessage(chatId, addFooter(responseText, lang));
-  }
-});
-
-// ======================= MESSAGE HANDLER =======================
-bot.on('message', async (msg) => {
-  if (!msg.text || msg.from.is_bot) return;
-  const cmdName = msg.text.trim().split(' ')[0].toLowerCase();
-  const cmd = commandRegistry.resolve(cmdName);
-  if (cmd) {
-    try {
-      await cmd.handler(msg);
-    } catch (e) {
-      Logger.error('Command error:', e);
-      bot.sendMessage(msg.chat.id, t(getUserLanguage(msg.from.id), 'error'));
-    }
-  }
-});
-
-// ======================= EXPRESS SERVER (MINI APP) =======================
-const app = express();
-app.use(express.json({ limit: '100kb' }));
-
-app.get('/health', (req, res) => res.json({ status: 'ok' }));
-app.get('/api/games', (req, res) => res.json(gameEngine.getGames(parseInt(req.query.page) || 1, 20)));
-app.post('/api/play', async (req, res) => {
-  const token = req.headers.authorization?.split(' ')[1];
-  const user = token ? await authService.verifyToken(token) : null;
-  if (!user) return res.status(401).json({ error: 'Unauthorized' });
-  const { gameId, amount, choice } = req.body;
-  const result = gameEngine.play(gameId, amount, choice, user.userId);
-  if (result.error) return res.status(400).json(result);
-  if (result.playerWins) {
-    await db.run('UPDATE users SET points = points + ? WHERE id = ?', [result.payout, user.userId]);
-  }
-  res.json(result);
-});
-app.post('/api/auth/register', async (req, res) => {
-  try { const user = await authService.register(req.body.username, req.body.email, req.body.password); res.json(user); }
-  catch (e) { res.status(400).json({ error: e.message }); }
-});
-app.post('/api/auth/login', async (req, res) => {
-  try { const result = await authService.login(req.body.username, req.body.password); res.json(result); }
-  catch (e) { res.status(401).json({ error: e.message }); }
-});
-app.get('/api/auth/me', async (req, res) => {
-  const token = req.headers.authorization?.split(' ')[1];
-  const user = token ? await authService.verifyToken(token) : null;
-  if (!user) return res.status(401).json({ error: 'Unauthorized' });
-  res.json({ user });
-});
-
-// Mini App HTML (đầy đủ giao diện cơ bản)
-app.get('/', (req, res) => {
-  res.send(`
-  <!DOCTYPE html>
-  <html lang="vi">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Super Bot Mini App</title>
-    <style>
-      :root { --bg: #1e1e2f; --card: #2d2d44; --text: #fff; --accent: #4caf50; }
-      * { margin:0; padding:0; box-sizing:border-box; }
-      body { font-family: sans-serif; background: var(--bg); color: var(--text); padding: 20px; }
-      .container { max-width: 600px; margin: 0 auto; }
-      h1 { text-align: center; margin-bottom: 20px; }
-      .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
-      .card { background: var(--card); border-radius: 10px; padding: 15px; text-align: center; cursor: pointer; }
-      .card:hover { transform: translateY(-2px); }
-      .btn { display: inline-block; padding: 10px 20px; background: var(--accent); color: white; border-radius: 8px; text-decoration: none; margin: 5px; }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <h1>🎮 Super Bot Mini App</h1>
-      <div id="app">
-        <div class="grid" id="gameGrid"></div>
-      </div>
-    </div>
-    <script>
-      let currentPage = 1;
-      async function loadGames(page) {
-        const res = await fetch('/api/games?page=' + page + '&pageSize=20');
-        const data = await res.json();
-        const grid = document.getElementById('gameGrid');
-        grid.innerHTML = '';
-        data.games.forEach(game => {
-          const card = document.createElement('div');
-          card.className = 'card';
-          card.innerHTML = '<h3>' + game.name + '</h3><p>' + game.category + '</p>';
-          card.onclick = () => alert('Game: ' + game.name);
-          grid.appendChild(card);
-        });
-      }
-      loadGames(1);
-    </script>
-  </body>
-  </html>
-  `);
-});
-
-app.listen(ENV.PORT, ENV.HOST, () => Logger.info(`Mini App server running on port ${ENV.PORT}`));
-
-// ======================= STARTUP =======================
-async function start() {
-  await initDatabase();
-  registerCommands();
-  Logger.info(`Registered ${commandRegistry.getAll(true).length} commands (including owner).`);
-  const shutdown = () => { bot.stopPolling(); process.exit(0); };
-  process.on('SIGTERM', shutdown);
-  process.on('SIGINT', shutdown);
-}
-start().catch(err => { Logger.error('Startup failed:', err); process.exit(1); });
